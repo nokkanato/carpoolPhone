@@ -1,10 +1,40 @@
 import React from 'react'
-import {StyleSheet, Text, View, Platform} from 'react-native'
-import { Container, Header, Content, Form, Item, Input, Label } from 'native-base';
+import {StyleSheet, Text, View, Platform, Dimensions} from 'react-native'
+import { Container, Header, Content, Form, Item, Input, Label, Button } from 'native-base';
 // import { Chip, Selectize as ChildEmailField } from 'react-native-material-selectize';
-import EmailField from './EmailField'; 
+import EmailField from './EmailField';
+import firebase from 'firebase';
+
+var width = Dimensions.get('window').width;
 
 class Driver extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        destination: '',
+        time: '',
+        cap: '',
+        plate: '',
+        price: '',
+       };
+    }
+
+    addNote = () => {
+      firebase.database().ref('notes/001').set(
+        {
+          dest: this.state.destination,
+          time: this.state.time,
+          cap: this.state.cap,
+          plate: this.state.plate,
+          price: this.state.price
+        }
+      ).then(() =>{
+        console.log('insert done');
+      }).catch((error) =>{
+        console.log(error);
+      })
+    }
+
     static defaultProps = {
         items: [
           {
@@ -46,7 +76,7 @@ class Driver extends React.Component {
         setTimeout(() => {
           if (!this._emailField.isErrored()) {
             const message = `Emails sent!\n\n${this._emailField.getSelectedEmails().join('\n')}`;
-    
+
             clearInterval(this.cancelMessage);
             this.setState({ message });
             this.cancelMessage = setTimeout(() => {
@@ -61,15 +91,15 @@ class Driver extends React.Component {
     state = {
         error: null
     }
-      
+
     render() {
         const { items } = this.props;
         const { isEnabled, message } = this.state;
-    
+
         return (
-            <Container>
+            <Container style={styles.container}>
                 <Content>
-                <Form>
+                <Form style={styles.form}>
                     <Item>
                     <EmailField
                         ref={c => this._emailField = c}
@@ -79,34 +109,66 @@ class Driver extends React.Component {
                         onChipClose={isEnabled => this.checkIsEnabled(isEnabled)}
                     />
                     </Item>
+
                     <Item floatingLabel last>
-                    <Label>Destination</Label>
-                    <Input />
+                    <Input
+                    placeholder="Destination"
+                    onChangeText={(destination) => this.setState({destination})}
+                    />
                     </Item>
+
                     <Item floatingLabel last>
-                    <Label>Leaving Time</Label>
-                    <Input />
+                    <Input
+                    placeholder="Leaving Time"
+                    onChangeText={(time) => this.setState({time})}
+                    />
                     </Item>
+
                     <Item floatingLabel last>
                     <Label>Capacity</Label>
-                    <Input />
+                    <Input
+                    onChangeText={(cap) => this.setState({cap})}
+                    />
                     </Item>
+
                     <Item floatingLabel last>
                     <Label>Plate Number</Label>
-                    <Input />
+                    <Input
+                    onChangeText={(plate) => this.setState({plate})}
+                    />
                     </Item>
+
                     <Item floatingLabel last>
                     <Label>Price</Label>
-                    <Input />
+                    <Input
+                    onChangeText={(price) => this.setState({price})}
+                    />
                     </Item>
+
                     <Item last>
                     <Label>Taken</Label>
                     </Item>
+                    <Button rounded danger onPress={() => this.addNote()} style={{marginTop:'5%', width: width*0.9}}>
+                      <Text style={{paddingLeft:'35%', fontSize: 20, color: 'white'}} >SET A RIDE</Text>
+                    </Button>
                 </Form>
                 </Content>
             </Container>
-        )  
+        )
     }
 }
 
 export default Driver;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+    width: width,
+  },
+  form: {
+    // width: width*0.9,
+  }
+});

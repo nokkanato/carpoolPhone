@@ -6,34 +6,29 @@
 import { SafeAreaView, createSwitchNavigator } from 'react-navigation';
 import React, { Component } from 'react';
 import {StyleSheet, TextInput} from 'react-native';
-// import { AccessToken, LoginManager } from 'react-native-fbsdk';
-// import firebase from 'react-native-firebase'
 import { Container, Button, Header, Content, Form, Item, Input, Label, Text, Icon } from 'native-base';
 import { AppRegistry, View,Dimensions } from 'react-native';
-import Landing from "./Landing";
-import Signup from "./SignUp";
+// import Login from "./Login";
 import firebase from 'firebase';
 import { ImageBackground, Image } from 'react-native';
 
 type Props = {};
 var height = Dimensions.get('window').height;
 var width = Dimensions.get('window').width;
-class Login extends Component<Props> {
+class SignUp extends Component<Props> {
     constructor(props) {
     super(props);
     this.state = {
       email: '',
       password: '',
-      authen: false
       };
     }
 
-  signIn = () => {
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+  signUp = () => {
+    firebase.auth().creatUserWithEmailAndPassword(this.state.email, this.state.password)
     .then(() => {
-      this.setState({authen: true})
       console.log('in hereee')
-      this.props.navigation.navigate('routeNameTwo')
+      // this.props.navigation.navigate('routeNameTwoThree')
       console.log('in hereee2')
 
     })
@@ -52,9 +47,7 @@ class Login extends Component<Props> {
         <Image source={{uri: '/Users/nattyauemanarom/Desktop/carpoolPhone/logoBlueT.png'}} style={{height: 211, width: width*0.9, flex: 1}}/>
           <Form style={styles.welcome}>
             <Item>
-              {/* <Input /> */}
               <Icon active name='mail' />
-              {/* <Icon ios='ios-menu'  style={{fontSize: 20, color: 'red'}}/> */}
               <Input placeholder="email"
               onChangeText={(email) => this.setState({email})}
               value={this.state.email}
@@ -62,21 +55,13 @@ class Login extends Component<Props> {
             </Item>
             <Item>
             <Icon active name='lock' />
-            {/* routeNameOne */}
               <Input placeholder="password"
               onChangeText={(password) => this.setState({password})}
               value={this.state.password}
               />
             </Item>
           </Form>
-          <Button rounded warning onPress={() => this.signIn()} style={styles.butt}>
-            <Text style={{paddingLeft:'41%'}}>SIGN IN</Text>
-          </Button>
-          <Button rounded info style={{marginTop:'3%', width: width*0.9}}>
-            <Icon active name="logo-googleplus" />
-            <Text style={{paddingRight:'35%'}} >GOOGLE+</Text>
-          </Button>
-          <Button rounded primary onPress={() => this.props.navigation.navigate('routeNameTwoTwo')} style={{marginTop:'3%', width: width*0.9}}>
+          <Button rounded warning onPress={() => this.signUp()} style={styles.butt}>
             <Text style={{paddingLeft:'41%'}}>SIGN UP</Text>
           </Button>
         </Content>
@@ -87,12 +72,9 @@ class Login extends Component<Props> {
 }
 
 export const AppNavigator = createSwitchNavigator({
-  Login,
-  routeNameTwo: Landing,
-  // routeNameTwoTwo: Signup,
+  SignUp,
+  // routeNameTwoThree: Login
 }, {
-  Login,
-  routeNameTwoTwo: Signup,
   // routeNameTwo: 'Landing'
 });
 
