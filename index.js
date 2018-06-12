@@ -1,5 +1,5 @@
 import { AppRegistry } from 'react-native';
-// import App from "./src/view/Login"
+// import App from "./src/view/Landing"
 import * as firebase from 'firebase';
 import {AppNavigator} from './src/view/Login'
 

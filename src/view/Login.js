@@ -12,6 +12,12 @@ import { Container, Button, Header, Content, Form, Item, Input, Label, Text, Ico
 import { AppRegistry, View,Dimensions } from 'react-native';
 import Landing from "./Landing";
 import Signup from "./SignUp";
+import Driver from "./Driver";
+import Rider from "./Rider";
+import IMAGE from '../sunsetBlur.jpg'
+import LOGOBLACK from '../logoBlack.png'
+
+
 import firebase from 'firebase';
 import { ImageBackground, Image } from 'react-native';
 
@@ -38,62 +44,67 @@ class Login extends Component<Props> {
 
     })
     .catch((error) =>{
+      alert(error)
       console.log(error)
     })
 
   }
+
   // this.props.navigation.navigate('Landing')
 
   render() {
+    
     return (
-    <ImageBackground source={{uri: '/Users/nattyauemanarom/Desktop/carpoolPhone/orgBlue.jpg'}} style={styles.bg}>
+    <ImageBackground source={ IMAGE } style={styles.bg}>
     <Container style={styles.container}>
         <Content>
-        <Image source={{uri: '/Users/nattyauemanarom/Desktop/carpoolPhone/logoBlueT.png'}} style={{height: 211, width: width*0.9, flex: 1}}/>
+        <Image source={ LOGOBLACK } style={styles.image}/>
           <Form style={styles.welcome}>
             <Item>
               {/* <Input /> */}
-              <Icon active name='mail' />
+              <Icon active name='mail' size={50} style={{color: 'white'}} />
               {/* <Icon ios='ios-menu'  style={{fontSize: 20, color: 'red'}}/> */}
-              <Input placeholder="email"
+              <Input placeholder="a@a.com"
+              autoCapitalize = 'none'
               onChangeText={(email) => this.setState({email})}
               value={this.state.email}
               />
             </Item>
             <Item>
-            <Icon active name='lock' />
+            <Icon active name='lock' size={50} style={{color: 'white'}}/>
             {/* routeNameOne */}
-              <Input placeholder="password"
+              <Input placeholder="aaaaaa"
+              secureTextEntry
+              autoCapitalize = 'none'
               onChangeText={(password) => this.setState({password})}
               value={this.state.password}
               />
             </Item>
           </Form>
-          <Button rounded warning onPress={() => this.signIn()} style={styles.butt}>
+          <Button rounded bordered light onPress={() => this.signIn()} style={styles.butt}>
             <Text style={{paddingLeft:'41%'}}>SIGN IN</Text>
           </Button>
-          <Button rounded info style={{marginTop:'3%', width: width*0.9}}>
-            <Icon active name="logo-googleplus" />
-            <Text style={{paddingRight:'35%'}} >GOOGLE+</Text>
-          </Button>
-          <Button rounded primary onPress={() => this.props.navigation.navigate('routeNameTwoTwo')} style={{marginTop:'3%', width: width*0.9}}>
+          <Button rounded bordered light onPress={() => this.props.navigation.navigate('signup')} style={{marginTop:'3%', width: width*0.9}}>
             <Text style={{paddingLeft:'41%'}}>SIGN UP</Text>
           </Button>
         </Content>
       </Container>
-      </ImageBackground>
+       </ImageBackground>
     );
   }
 }
 
-export const AppNavigator = createSwitchNavigator({
+
+{/* <SafeAreaView style={styles.container} forceInset={{ bottom: 'never' }}> */}
+export const AppNavigator= createSwitchNavigator({
   Login,
   routeNameTwo: Landing,
+  rider: Rider,
+  driver: Driver,
+  signup: Signup
   // routeNameTwoTwo: Signup,
 }, {
-  Login,
-  routeNameTwoTwo: Signup,
-  // routeNameTwo: 'Landing'
+  initialRouteName: 'Login'
 });
 
 const styles = StyleSheet.create({
@@ -109,6 +120,7 @@ const styles = StyleSheet.create({
     // fontSize: 20,
     // textAlign: 'center',
     margin: 10,
+    paddingTop: height*0.07,
   },
   instructions: {
     textAlign: 'center',
@@ -126,5 +138,16 @@ const styles = StyleSheet.create({
   },
   bg: {
     flex: 1,
+  },
+  image: {
+    flex: 1,
+    width: width*0.9,
+    height: 180,
+    resizeMode: 'contain',
+  },
+  safeContainer: {
+    flex: 1,
+    backgroundColor: '#ecf0f1',
+    justifyContent: 'space-between',
   }
 });

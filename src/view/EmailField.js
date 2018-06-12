@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Dimensions } from 'react-native';
 import { Chip, Selectize as ChildEmailField } from 'react-native-material-selectize';
+
+var width = Dimensions.get('window').width;
 
 export default class EmailField extends Component {
   static defaultProps = {
@@ -11,7 +13,8 @@ export default class EmailField extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      error: null
+      error: null,
+      destinations: []
     };
   }
 
@@ -23,21 +26,24 @@ export default class EmailField extends Component {
     this._childEmailField.blur();
   };
 
-  getSelectedEmails = () => this._childEmailField.getSelectedItems().result;
-
+  getSelectedEmails = () => {
+    return this._childEmailField.getSelectedItems().result
+  };
   isErrored = () => {
     return !!this.state.error;
   }
 
 
   onSubmitEditing = email => {
+    this.state.destinations.push(email)
     return (email);
   };
 
   onChipClose = onClose => {
     const { onChipClose } = this.props;
     const { error } = this.state;
-
+    var index = this.state.destinations.indexOf(this.getSelectedEmails());
+    this.state.destinations.splice(index, 1)
     onChipClose(!error && this.getSelectedEmails().length > 1);
     onClose();
   }
@@ -48,6 +54,7 @@ export default class EmailField extends Component {
 
     return (
       <ChildEmailField
+        style={{width: width*0.9}}
         ref={c => this._childEmailField = c}
         chipStyle={styles.chip}
         chipIconStyle={styles.chipIcon}
@@ -60,7 +67,7 @@ export default class EmailField extends Component {
         textInputProps={{
           onSubmitEditing: this.onSubmitEditing,
           onBlur: () => this._childEmailField.submit(),
-          placeholder: 'Insert one or more emails',
+          placeholder: 'Insert one or more place',
           keyboardType: 'email-address'
         }}
         renderRow={(id, onPress, item) => (
@@ -134,7 +141,7 @@ const styles = StyleSheet.create({
   },
   listEmailText: {
     color: 'rgba(0, 0, 0, 0.54)',
-    fontSize: 14,
+    fontSize: 13,
     lineHeight: 21
   }
 });

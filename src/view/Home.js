@@ -1,76 +1,242 @@
 import React from 'react'
+import Modal from "react-native-modal";
 import {StyleSheet, Text, View, Platform, Dimensions} from 'react-native'
-import MapView from 'react-native-maps';
-import Marker from 'react-native-maps';
+import { SafeAreaView, createSwitchNavigator , withNavigation} from 'react-navigation';
+import { Container, Header, Content, Card, CardItem, Body, Button } from 'native-base'
+import firebase, { database, auth, uid} from 'firebase';
+import Driver from './Driver';
+import Rider from './Rider';
+var width = Dimensions.get('window').width;
+class Home extends React.Component {
+
+  state = {
+    driverId: '',
+    data: [],
+    err: '',
+    status: '',
+    isModalVisible: false,
+  }
+  
 
 
-// const { width, height } = Dimensions.get('window');
-// const SCREEN_WIDTH = width;
-// const ASPECT_RATIO = width / height;
-// const LATITUDE = 13.78825;
-// const LONGITUDE = 101.4324;
-// const LATITUDE_DELTA = 0.0922;
-// const LONGITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
+    componentDidMount() {
+      var uid = firebase.auth().currentUser.uid;
+      var refStatus = firebase.database().ref("status/" + uid);
+      var refRider = firebase.database().ref("riding/" + uid);
+      console.log('uiddd', uid)
+      const self = this
+      
+      refStatus.once("value")
+        .then(function(snap) {
+          // Riding
+          console.log('homeee')
+          // console.log('lol', snap.exists())
+          if (snap.exists()) {
+            self.setState({ status: snap.val().status });
+            if (self.state.status === 'driver') {
+              console.log('it is driver')
+              var refDriver = firebase.database().ref("notes/" + uid);
+              refDriver.once("value", (driver) => {
+                let lst = [];
+                lst.push({
+                  text: driver.val()
+                })
+                self.setState({ data: lst });
+              })
 
-class DefaultContainer extends React.Component {
-    // state = {
-    //     region: {
-    //         latitude: LATITUDE,
-    //         longitude: LONGITUDE,
-    //         latitudeDelta: LATITUDE_DELTA,
-    //         longitudeDelta: LONGITUDE_DELTA,
-    //     },
-    // };
-    
+            } else {
+              var refRider = firebase.database().ref("riding/" + uid);
+              refRider.once("value", (rider) => {
+                var refDriver = firebase.database().ref("notes/" + rider.val().driver);
+                console.log('it is rider')
+                refDriver.once("value", (x) => {
+                    console.log('vavlue', x.val());
+                    let lst = [];
+                    lst.push({
+                      text: x.val()
+                    })
+                    console.log('lst', lst);
+                    self.setState({ data: lst });
+                })
+              })
+        
+            }
+
+
+          } else {
+            console.log('Not existttttttttt')
+            self.setState({
+              data: null
+            })            
+          }
+        })
+
+    }
+
+    againHome () {
+      // this.setState({ 
+      //   isModalVisible: false,
+      //  });
+      var uid = firebase.auth().currentUser.uid;
+      var refStatus = firebase.database().ref("status/" + uid);
+      var refRider = firebase.database().ref("riding/" + uid);
+      const self = this
+      
+      refStatus.once("value")
+        .then(function(snap) {
+          // Riding
+          console.log('homeee')
+          // console.log('lol', snap.exists())
+          if (snap.exists()) {
+            self.setState({ status: snap.val().status });
+            if (self.state.status === 'driver') {
+              console.log('it is driver')
+              var refDriver = firebase.database().ref("notes/" + uid);
+              refDriver.once("value", (driver) => {
+                let lst = [];
+                lst.push({
+                  text: driver.val()
+                })
+                self.setState({ data: lst });
+              })
+
+            } else {
+              var refRider = firebase.database().ref("riding/" + uid);
+              refRider.once("value", (rider) => {
+                var refDriver = firebase.database().ref("notes/" + rider.val().driver);
+                console.log('it is rider')
+                refDriver.once("value", (x) => {
+                    console.log('vavlue', x.val());
+                    let lst = [];
+                    lst.push({
+                      text: x.val()
+                    })
+                    console.log('lst', lst);
+                    self.setState({ data: lst });
+                })
+              })
+        
+            }
+
+
+          } else {
+            console.log('Not existttttttttt')
+            self.setState({
+              data: null
+            })            
+          }
+        })
+
+    }
+    _toggleModal =  () =>
+    this.setState({ 
+      isModalVisible: !this.state.isModalVisible,
+     });
+
+    cancalRide = () => {
+      this._toggleModal();
+      var uid = firebase.auth().currentUser.uid;
+      var ref = firebase.database().ref("riding/" + uid);
+      if (this.state.status === 'driver') {
+        var ref = firebase.database().ref("notes/" + uid);
+        ref.child.remove();
+        var refStatus = firebase.database().ref("status/" + uid);
+        refStatus.child.remove();
+        this.againHome();
+      } else {
+        var ref = firebase.database().ref("riding/" + uid);
+        ref.remove();
+        var refStatus = firebase.database().ref("status/" + uid);
+        refStatus.remove();
+        this.againHome();
+
+      }
+    }
     render() {
+      if (this.state.data !== null) {
+        console.log('kaka Top', this.state.data)
       return (
+        <Container>
         <View style={styles.container}>
           {this.props.children}
         </View>
-      );
-    }
-  }
+        <Content>
   
-  const styles = StyleSheet.create({
-    containter: {}
-  });
-  
-  class Map extends React.Component {
-    static navigationOptions = {
-      tabBarLabel: 'Mapa',
-      tabBarIcon: ({ tintColor }) => (
-        <Entypo name="map" size={iconSize} color={tintColor} />
-      ),
-    };
-  
-    render() {
-      return (
-        <DefaultContainer>
-          <View style ={{
-            ...StyleSheet.absoluteFillObject,
-            height:600,
-            width: 400,
-            justifyContent: 'flex-end',
-            alignItems: 'center',
-          }}>
-          <MapView
-            style={{...StyleSheet.absoluteFillObject}}
-            initialRegion={{
-              latitude: 13.78825,
-              longitude: 101.4324,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-          />
-          <Marker
-              // coordinate={marker.latlng}
-              // image={require('../assets/pin.png')}
-            />
-          </View>
-  
-        </DefaultContainer>
-      );
+        {
+          this.state.data.map((data)=>
+          <Card >
+              <Modal isVisible={this.state.isModalVisible} onSwipe={this._toggleModal} swipeDirection="down">
+                <View style={styles.modalContent}>
+                  <Text>Are you Sure </Text>
+                  {/* <TouchableOpacity onPress={this._toggleModal}> */}
+                  <Button rounded onPress={() => this.cancalRide()} style={{backgroundColor: '#ff6700',width: width*0.55}}>
+                    <Text style={{paddingLeft:'30%', fontSize: 20, color: 'white'}} >Yes</Text>
+                  </Button>
+                  {/* </TouchableOpacity> */}
+                </View>
+            </Modal>
+            <CardItem header>
+              <Text>Destination: {data.text.dest.join(", ")} </Text>
+            </CardItem>
+            <CardItem>
+            <Text> You are currently : {this.state.status} </Text>
+            </CardItem>
+            <CardItem>
+              <Body>
+                <Text>
+                  Time : {data.text.time}
+                </Text>
+                <Text>
+                  Capacity : {data.text.cap}
+                </Text>
+                <Text>
+                  Plate: {data.text.plate}
+                </Text>
+                <Text>
+                  Price: {data.text.price}
+                </Text>
+              </Body>
+            </CardItem>
+            <CardItem footer>
+            <Button rounded onPress={() => this._toggleModal()} style={{backgroundColor: '#ff6700', width: width*0.9}}>
+              <Text style={{paddingLeft:'30%', fontSize: 20, color: 'white'}} >Cancel</Text>
+            </Button>
+            </CardItem>
+          </Card>
+          )
+        }
+        </Content>
+        </Container>
+      )}
+      else {
+        console.log('prop', this.props)
+        
+        return (
+          <Container>
+            <Card>
+              <CardItem>
+                <Text> You have not become anything</Text>
+                </CardItem>
+            </Card>
+        </Container>
+        )
+
+      }
     }
   }
 
-  export default Map
+  const styles = StyleSheet.create({
+    containter: {},
+    modalContent: {
+      backgroundColor: 'white',
+      padding: 22,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 4,
+      borderColor: 'rgba(0, 0, 0, 0.1)',
+    }
+  });
+
+
+  export default Home;
+

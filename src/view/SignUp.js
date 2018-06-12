@@ -11,11 +11,14 @@ import { AppRegistry, View,Dimensions } from 'react-native';
 // import Login from "./Login";
 import firebase from 'firebase';
 import { ImageBackground, Image } from 'react-native';
+import LOGO from '../logoBlueT.png'
+import IMAGE from '../sunsetBlur.jpg'
+
 
 type Props = {};
 var height = Dimensions.get('window').height;
 var width = Dimensions.get('window').width;
-class SignUp extends Component<Props> {
+class SignUp extends React.Component {
     constructor(props) {
     super(props);
     this.state = {
@@ -24,27 +27,30 @@ class SignUp extends Component<Props> {
       };
     }
 
-  signUp = () => {
-    firebase.auth().creatUserWithEmailAndPassword(this.state.email, this.state.password)
-    .then(() => {
-      console.log('in hereee')
-      // this.props.navigation.navigate('routeNameTwoThree')
-      console.log('in hereee2')
+    signUp = () => {
+      firebase.auth().createUserWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() => {
+        this.setState({authen: true})
+        console.log('in hereee')
+        this.props.navigation.navigate('routeNameTwo')
+        console.log('in hereee2')
+  
+      })
+      .catch((error) =>{
+        alert(error)
+        console.log(error)
+      })
+  
+    }
 
-    })
-    .catch((error) =>{
-      console.log(error)
-    })
-
-  }
   // this.props.navigation.navigate('Landing')
 
   render() {
     return (
-    <ImageBackground source={{uri: '/Users/nattyauemanarom/Desktop/carpoolPhone/orgBlue.jpg'}} style={styles.bg}>
+    <ImageBackground source={IMAGE} style={styles.bg}>
     <Container style={styles.container}>
         <Content>
-        <Image source={{uri: '/Users/nattyauemanarom/Desktop/carpoolPhone/logoBlueT.png'}} style={{height: 211, width: width*0.9, flex: 1}}/>
+        <Image source={LOGO} style={{height: 211, width: width*0.9, flex: 1}}/>
           <Form style={styles.welcome}>
             <Item>
               <Icon active name='mail' />
@@ -56,6 +62,7 @@ class SignUp extends Component<Props> {
             <Item>
             <Icon active name='lock' />
               <Input placeholder="password"
+              secureTextEntry
               onChangeText={(password) => this.setState({password})}
               value={this.state.password}
               />
@@ -71,12 +78,7 @@ class SignUp extends Component<Props> {
   }
 }
 
-export const AppNavigator = createSwitchNavigator({
-  SignUp,
-  // routeNameTwoThree: Login
-}, {
-  // routeNameTwo: 'Landing'
-});
+export default SignUp;
 
 const styles = StyleSheet.create({
   container: {

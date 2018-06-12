@@ -1,10 +1,8 @@
 import React from 'react'
 import { SafeAreaView, createSwitchNavigator } from 'react-navigation';
 import {StyleSheet, Text, View, Platform} from 'react-native'
-
 import Login  from "./view/Login"
 import Landing  from "./view/Landing"
-
 
 const instructions = Platform.select({
     ios: 'Press Cmd+R to reload,\n' +
@@ -41,12 +39,7 @@ class App extends React.Component {
     }
 }
 
-const AppNavigator = createSwitchNavigator({
-    Login,
-    routeNameTwo: Landing,
-}, {
-    initialRouteName: 'Login'
-});
+
 
 
 
